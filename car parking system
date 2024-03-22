@@ -1,0 +1,82 @@
+ #include <LiquidCrystal_I2C.h>
+#include <Servo.h>
+Servo myservo;
+
+LiquidCrystal_I2C lcd(0x27, 16, 2); // I2C address 0x27, 16 column and 2 rows
+
+int count = 0;
+int k = 0;
+int l = 0;
+int ir1 = 6;
+int ir2 = 7;
+int led2 = 9;
+int led1 = 8;
+int pos = 0;                     
+
+void setup()
+{
+
+  myservo.attach(9);            
+
+  lcd.init(); // initialize the lcd
+  lcd.backlight();
+  
+  pinMode(6,INPUT);
+  pinMode(7,INPUT);
+  pinMode(9,OUTPUT);
+  pinMode(8,OUTPUT);
+  
+  Serial.begin(9600);
+}
+
+void loop(){
+  k = digitalRead(ir1);
+  l = digitalRead(ir2);
+
+    if(count >4){
+    lcd.clear();                 
+    lcd.setCursor(0, 0);         // move cursor to   (0, 0)
+    
+    lcd.print(" SORRY :( ");  
+    lcd.print("No Slot");  
+    count = 4; 
+    delay(200);
+    }
+
+    else{
+    lcd.clear();                     
+    lcd.setCursor(3, 0);             
+    lcd.print(" WELCOME! ");
+    lcd.setCursor(0, 1);  
+    lcd.print("Remaining slot:");      
+    //lcd.setCursor(2, 1);              
+    lcd.print(4-count);               
+    delay(200);  
+    Serial.print("COUNT = \n");
+    Serial.print(count);
+   }
+
+   if (k==1)
+   {
+    
+    count = count +1;
+
+    }
+ 
+   if (l==1)
+  {
+    count = count - 1;
+    if(count <0){
+      count = 0;
+    }
+  }
+
+  for (pos = 80; pos <= 180; pos += 1) { 
+    myservo.write(pos);              
+    delay(10);                      
+  }
+  for (pos = 180; pos >= 80; pos -= 1) { 
+    myservo.write(pos);              
+    delay(10);                       
+  }
+}
